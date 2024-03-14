@@ -1,8 +1,15 @@
 
 .anchor
+.vscode
 .DS_Store
 target
 **/*.rs.bk
 node_modules
 test-ledger
 .yarn
+cp-front.sh
+
+app/node_modules
+app/.vscode
+app/.next
+app/.env
