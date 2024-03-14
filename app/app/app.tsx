@@ -8,24 +8,11 @@ import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import * as anchor from "@coral-xyz/anchor";
 import * as solana from "@solana/web3.js";
 // import idl from "./lib/idl/instant_yield_lending.json";
-import { getProvider } from "@project-serum/anchor";
 
 
 /* ------------------------ Variables ------------------------ */
 // const PROGRAM_ID = new solana.PublicKey(idl.metadata.address);
 
-async function LoadProgram() {
-    const programId = new solana.PublicKey('ALend7Ketfx5bxh6ghsCDXAoDrhvEmsXT3cynB6aPLgx'); // Lending Program
-    console.log(anchor.getProvider());
-    const idl = await anchor.Program.fetchIdl(programId, anchor.getProvider());
-    console.log(idl); // outputs null for some reason
-    if (idl) {
-        const program = new anchor.Program(idl, programId, anchor.getProvider());
-        // Interact with the contract
-      } else {
-        console.error("IDL is null, unable to proceed.");
-      }
-}
 
 /* ------------------------ Components ----------------------- */
 export default function App() {
@@ -54,8 +41,17 @@ export default function App() {
           //console.log("Program:", program);
     }, [wallet])
 
-    const lendBtn = () => {
-        LoadProgram();
+    async function lendBtn() {
+        const programId = new solana.PublicKey('ALend7Ketfx5bxh6ghsCDXAoDrhvEmsXT3cynB6aPLgx'); // Lending Program
+        console.log(anchor.getProvider());
+        const idl = await anchor.Program.fetchIdl(programId, anchor.getProvider());
+        console.log(idl); // outputs null for some reason
+        if (idl) {
+            const program = new anchor.Program(idl, programId, anchor.getProvider());
+            // Interact with the contract
+          } else {
+            console.error("IDL is null, unable to proceed.");
+          }
     }
 
     return (
