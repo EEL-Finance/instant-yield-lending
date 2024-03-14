@@ -1,14 +1,14 @@
 import * as anchor from "@coral-xyz/anchor";
-import { Program } from "@coral-xyz/anchor";
 import { InstantYieldLending } from "../target/types/instant_yield_lending";
 
 describe("instant-yield-lending", () => {
 	const provider = anchor.AnchorProvider.env();
 	anchor.setProvider(provider);
 
-	const program = anchor.workspace.instant_yield_lending as Program<InstantYieldLending>;
+	const program = anchor.workspace.instant_yield_lending as anchor.Program<InstantYieldLending>;
 	let payer = provider.wallet;
 
+	console.log(program.programId);
 	let [treasury] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("iyl-treasury")], program.programId);
 
 	// before(async () => {

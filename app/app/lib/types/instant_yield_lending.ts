@@ -54,6 +54,10 @@ export type InstantYieldLending = {
           {
             "name": "bump",
             "type": "u8"
+          },
+          {
+            "name": "testValue",
+            "type": "bool"
           }
         ]
       }
@@ -117,6 +121,10 @@ export const IDL: InstantYieldLending = {
           {
             "name": "bump",
             "type": "u8"
+          },
+          {
+            "name": "testValue",
+            "type": "bool"
           }
         ]
       }

@@ -2,7 +2,7 @@ use anchor_lang::solana_program::native_token::LAMPORTS_PER_SOL;
 use anchor_lang::system_program::*;
 use anchor_lang::prelude::*;
 
-declare_id!("CnT49JjxnPx4KE7FtLLG1GxzfoRvjPa4pvwupQZ2AWo6");
+declare_id!("E53aBtof6YzCWAXpCgXsJDhskma11NBLEgTFFvJDzzHv");
 
 #[program]
 pub mod instant_yield_lending {

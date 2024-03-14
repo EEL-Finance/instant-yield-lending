@@ -54,12 +54,13 @@
           {
             "name": "bump",
             "type": "u8"
+          },
+          {
+            "name": "testValue",
+            "type": "bool"
           }
         ]
       }
     }
-  ],
-  "metadata": {
-    "address": "CnT49JjxnPx4KE7FtLLG1GxzfoRvjPa4pvwupQZ2AWo6"
-  }
+  ]
 }
