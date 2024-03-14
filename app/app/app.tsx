@@ -6,19 +6,32 @@ import { useEffect, useState } from "react";
 // Web3
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import * as anchor from "@coral-xyz/anchor";
-import { PublicKey } from "@solana/web3.js";
-import idl from "./lib/idl/instant_yield_lending.json";
+import * as solana from "@solana/web3.js";
+// import idl from "./lib/idl/instant_yield_lending.json";
+import { getProvider } from "@project-serum/anchor";
 
 
 /* ------------------------ Variables ------------------------ */
-const PROGRAM_ID = new PublicKey(idl.metadata.address);
+// const PROGRAM_ID = new solana.PublicKey(idl.metadata.address);
 
+async function LoadProgram() {
+    const programId = new solana.PublicKey('ALend7Ketfx5bxh6ghsCDXAoDrhvEmsXT3cynB6aPLgx'); // Lending Program
+    console.log(anchor.getProvider());
+    const idl = await anchor.Program.fetchIdl(programId, anchor.getProvider());
+    console.log(idl); // outputs null for some reason
+    if (idl) {
+        const program = new anchor.Program(idl, programId, anchor.getProvider());
+        // Interact with the contract
+      } else {
+        console.error("IDL is null, unable to proceed.");
+      }
+}
 
 /* ------------------------ Components ----------------------- */
 export default function App() {
-    const [program, setProgram] = useState<anchor.Program<anchor.Idl>>();
+    // const [program, setProgram] = useState<anchor.Program<anchor.Idl>>();
 
-    const { connection } = useConnection();
+    const connection = new solana.Connection(solana.clusterApiUrl('devnet'))
     const wallet = useAnchorWallet();
 
     // Setup provider and program
@@ -35,15 +48,19 @@ export default function App() {
             anchor.setProvider(provider)
           }
         
-          const program = new anchor.Program(idl as anchor.Idl, PROGRAM_ID)
-          setProgram(program)
+          // const program = new anchor.Program(idl as anchor.Idl, PROGRAM_ID)
+          // setProgram(program)
 
-          console.log("Program:", program);
+          //console.log("Program:", program);
     }, [wallet])
+
+    const lendBtn = () => {
+        LoadProgram();
+    }
 
     return (
         <div className="h-full v-full p-5">
-            <button>Initialise Treasury</button>
+            <button onClick={lendBtn}>Initialise Treasury</button>
         </div>
     )
 }

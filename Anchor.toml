@@ -11,7 +11,7 @@ instant_yield_lending = "CnT49JjxnPx4KE7FtLLG1GxzfoRvjPa4pvwupQZ2AWo6"
 url = "https://api.apr.dev"
 
 [provider]
-cluster = "localnet"
+cluster = "devnet"
 wallet = "/home/tymurt/.config/solana/id.json"
 
 [scripts]
