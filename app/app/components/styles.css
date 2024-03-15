@@ -1,9 +1,9 @@
 @import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700&display=swap');
 
-.wallet-adapter-button,
+/* .wallet-adapter-button,
 .wallet-adapter-dropdown {
     margin-left: auto;
-}
+} */
 
 .wallet-adapter-button {
     background-color: transparent;
@@ -19,8 +19,6 @@
     line-height: 48px;
     padding: 0 24px;
     border-radius: 4px;
-
-    margin-left: auto;
 }
 
 .wallet-adapter-button-trigger {

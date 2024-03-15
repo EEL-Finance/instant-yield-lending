@@ -24,7 +24,7 @@ export type InstantYieldLending = {
       "args": []
     },
     {
-      "name": "fillTreasury",
+      "name": "treasuryDirectDeposit",
       "accounts": [
         {
           "name": "treasury",
@@ -42,7 +42,38 @@ export type InstantYieldLending = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "sol",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initializeEscrow",
+      "accounts": [
+        {
+          "name": "escrow",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lender",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "sol",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -54,10 +85,18 @@ export type InstantYieldLending = {
           {
             "name": "bump",
             "type": "u8"
-          },
+          }
+        ]
+      }
+    },
+    {
+      "name": "escrow",
+      "type": {
+        "kind": "struct",
+        "fields": [
           {
-            "name": "testValue",
-            "type": "bool"
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
@@ -91,7 +130,7 @@ export const IDL: InstantYieldLending = {
       "args": []
     },
     {
-      "name": "fillTreasury",
+      "name": "treasuryDirectDeposit",
       "accounts": [
         {
           "name": "treasury",
@@ -109,7 +148,38 @@ export const IDL: InstantYieldLending = {
           "isSigner": false
         }
       ],
-      "args": []
+      "args": [
+        {
+          "name": "sol",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "initializeEscrow",
+      "accounts": [
+        {
+          "name": "escrow",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "lender",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "sol",
+          "type": "u64"
+        }
+      ]
     }
   ],
   "accounts": [
@@ -121,10 +191,18 @@ export const IDL: InstantYieldLending = {
           {
             "name": "bump",
             "type": "u8"
-          },
+          }
+        ]
+      }
+    },
+    {
+      "name": "escrow",
+      "type": {
+        "kind": "struct",
+        "fields": [
           {
-            "name": "testValue",
-            "type": "bool"
+            "name": "bump",
+            "type": "u8"
           }
         ]
       }
