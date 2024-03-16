@@ -5,6 +5,7 @@
 import { useEffect, useState } from "react";
 import dynamic from "next/dynamic";
 import "./styles.css";
+import Link from 'next/link';
 // Web3
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import * as anchor from "@coral-xyz/anchor";
@@ -69,7 +70,7 @@ export default function Header() {
 
     return (
         <header className="h-20 w-full bg-bg-d flex flex-row items-center gap-8 px-5 text-ac-1">
-            <h1 className="font-bold text-3xl">EEL Finance</h1>
+            <Link href="/"><h1 className="font-bold text-3xl">EEL Finance</h1></Link>
             <button onClick={onClickInit} className="text-md font-semibold rounded-md border-2 border-bg-d ml-auto bg-ac-1 h-12 px-3 text-bg-d">Initialise Treasury</button>
             <WalletMultiButton />
         </header>
