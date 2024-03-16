@@ -12,6 +12,7 @@ import Footer from "../components/footer";
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import * as anchor from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
+import { NextApiRequest, NextApiResponse } from 'next';
 
 import { InstantYieldLending } from "../lib/types/instant_yield_lending";
 import idl from "../lib/idl/instant_yield_lending.json";
@@ -97,8 +98,19 @@ export default function App() {
         console.log("Escrow balance:", balance);
     }
 
-    function lendTokens() {
-        console.log(lendAmount);
+    async function lendTokens(req: NextApiRequest, res: NextApiResponse) { // Solend integration
+        try {
+            const response = await fetch('https://api.solend.fi/healthcheck');
+        
+            if (response.ok) {
+              console.log("All good.")
+            } else {
+              res.status(500).json({ status: 'error', message: 'Solend API is not healthy' });
+            }
+          } catch (error) {
+            console.error('Error checking Solend API health:', error);
+            res.status(500).json({ status: 'error', message: 'An error occurred while checking Solend API health' });
+          }
     }
 
     function estimateLockup() {
