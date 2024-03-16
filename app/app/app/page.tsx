@@ -23,13 +23,21 @@ const PROGRAM_ID = new PublicKey("7kB1Hkaq6CVoB4C2pMoKws2ijMEL6Uh5HEP5aJnSUP2W")
 
 /* ------------------------ Components ----------------------- */
 export default function App() {
+    // admin
     const [program, setProgram] = useState<anchor.Program<InstantYieldLending>>()
     const [amount, setAmount] = useState('')
-    
+    const [treasury] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("iyl-treasury")], PROGRAM_ID)
+
+    //frontend
     const { connection } = useConnection()
     const wallet = useAnchorWallet()
-    
-    const [treasury] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("iyl-treasury")], PROGRAM_ID)
+    const [hasPosition, setHasPosition] = useState(false);
+
+    // position estimation
+    const [stakeAmount, setStakeAmount] = useState();
+    const [desiredAmount, setDesiredAmount] = useState();
+    const [esimatedLockup, setEstimatedLockup] = useState("...");
+
 
     // Setup provider and program
     useEffect(() => {
@@ -46,6 +54,10 @@ export default function App() {
 
         const program = new anchor.Program(idl as anchor.Idl, PROGRAM_ID) as unknown as anchor.Program<InstantYieldLending> // Haven't found a better way to use the program types
         setProgram(program)
+
+        if(false) { // Check if user has opened a position
+            setHasPosition(true);
+        }
 
     }, [wallet])
 
@@ -85,9 +97,28 @@ export default function App() {
         console.log("Escrow balance:", balance);
     }
 
-    function submit() {
-        console.log("Submitted")
+    function estimateLockup() {
+        console.log("Estimate lockup. Stake: ",stakeAmount," Desired: ",desiredAmount)
+        setEstimatedLockup("6");
     }
+
+    function stakeAndReceive() {
+        console.log("Stake and receive")
+    }
+
+    function unlockCapital() {
+        console.log("Unlock capital.")
+    }
+
+    const handleStakeChange = (event: any) => {
+        const value = event.target.value;
+        setStakeAmount(value);
+    };
+
+    const handleDesiredChange = (event: any) => {
+        const value = event.target.value;
+        setDesiredAmount(value);
+    };
 
     return (
       <WalletContextWrapper>
@@ -104,6 +135,7 @@ export default function App() {
                   <p>Input: {"#"} lamports</p>
               </div> */}
 
+        {!hasPosition ? (
           <Container>
               <div className='grid gap-4 md:grid-cols-2 mt-16'>
                   <div className='col-span-2 grid gap-4'>
@@ -124,27 +156,73 @@ export default function App() {
                   </Card>
                   <Card>
                       <h1 className='text-2xl font-bold mb-4'>Open Position</h1>
-                      <form onSubmit={submit} className='grid grid-cols-2 gap-3'>
+                      <div className='grid grid-cols-2 gap-3'>
                           <div className='flex col-span-2 flex-col'>
                               <label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Enter amount to stake</label>
-                              <input name='receiver_address' placeholder="Stake amount" type="text" className="bg-gray-50 border border-bg-d text-gray-900 text-sm rounded-lg focus:ring-ac-2 focus:border-ac-2 block w-full p-2.5 dark:bg-gray-700 dark:border-ac-3 dark:placeholder-gray-400 dark:text-white dark:focus:ring-ac-2 dark:focus:border-ac-2"/>
+                              <input 
+                                name='stake_amount' placeholder="Stake amount" type="text" className="bg-gray-50 border border-bg-d text-gray-900 text-sm rounded-lg focus:ring-ac-2 focus:border-ac-2 block w-full p-2.5 dark:bg-gray-700 dark:border-ac-3 dark:placeholder-gray-400 dark:text-white dark:focus:ring-ac-2 dark:focus:border-ac-2"
+                                value={stakeAmount}
+                                onChange={handleStakeChange}
+                              />
                           </div>
                           <div className='flex grid-cols-1 flex-col relative'>
                               <label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Enter desired amount</label>
-                              <input name='receiver_address' placeholder="Desired amount" type="text" className="bg-gray-50 border border-bg-d text-gray-900 text-sm rounded-lg focus:ring-ac-2 focus:border-ac-2 block w-full p-2.5 dark:bg-gray-700 dark:border-ac-3 dark:placeholder-gray-400 dark:text-white dark:focus:ring-ac-2 dark:focus:border-ac-2"/>
+                              <input 
+                                name='desired_amount' placeholder="Desired amount" type="text" className="bg-gray-50 border border-bg-d text-gray-900 text-sm rounded-lg focus:ring-ac-2 focus:border-ac-2 block w-full p-2.5 dark:bg-gray-700 dark:border-ac-3 dark:placeholder-gray-400 dark:text-white dark:focus:ring-ac-2 dark:focus:border-ac-2"
+                                value={desiredAmount}
+                                onChange={handleDesiredChange}  
+                              />
                           </div>
-                          <button type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Estimate Lockup Period</button>
-                      </form>
-                      <form onSubmit={submit} className='grid grid-cols-2 gap-2 mt-8'>
-                          <h1 className='text-xl col-span-2 font-bold'><span className='text-m font-normal relative text-border-bg-d'>Estimated lockup period: </span>3 months</h1>
-                          <button type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Stake & Receive</button>
-                      </form>
+                          <button onClick={estimateLockup} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Estimate Lockup Period</button>
+                      </div>
+                      <div className='grid grid-cols-2 gap-2 mt-8'>
+                          <h1 className='text-xl col-span-2 font-bold'><span className='text-m font-normal relative text-border-bg-d'>Estimated lockup period: </span>{esimatedLockup} months</h1>
+                          <button onClick={stakeAndReceive} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Stake & Receive</button>
+                      </div>
                   </Card >
                   </div>
                   <div className='col-span-2'>
                   </div>
               </div>
           </Container>
+          ) : (
+            <Container>
+                <div className='grid gap-4 md:grid-cols-2 mt-16'>
+                    <div className='col-span-2 grid gap-4'>
+                    </div>
+
+                    <div className="col-span-2 grid gap-4">
+                    <Card>
+                        <div className='flex gap-4 justify-around flex-wrap mb-4'>
+                            <div>
+                                <p className='text-sm text-slate-400 font-medium mb-1'>Current APY: </p>
+                                <h1 className='text-2xl font-bold'> 20% </h1>
+                            </div>
+                            <div>
+                                <p className='text-sm text-slate-400 font-medium mb-1'>Staked amount: </p>
+                                <h1 className='text-2xl font-bold'> $100 </h1>
+                            </div>
+                            <div>
+                                <p className='text-sm text-slate-400 font-medium mb-1'>Received amount: </p>
+                                <h1 className='text-2xl font-bold'> $10 </h1>
+                            </div>
+                            <div>
+                                <p className='text-sm text-slate-400 font-medium mb-1'>Lockup left: </p>
+                                <h1 className='text-2xl font-bold'> 10 days </h1>
+                            </div>
+                        </div>
+                    </Card>
+                    <Card>
+                        <div className='grid grid-cols-2 gap-2'>
+                            <button onClick={unlockCapital} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Unlock capital</button>
+                        </div>
+                    </Card >
+                    </div>
+                    <div className='col-span-2'>
+                    </div>
+                </div>
+            </Container>
+          )}
 
           </div>
         <Footer />
