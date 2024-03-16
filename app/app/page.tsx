@@ -2,6 +2,7 @@
 // Frontend
 import WalletContextWrapper from "./components/walletContextWrapper";
 import Header from "./components/header";
+import Footer from "./components/footer";
 import App from "./app";
 // Web3
 
@@ -10,9 +11,10 @@ import App from "./app";
 export default function Main() {
   return (
     <WalletContextWrapper>
-      <div className="flex flex-col">
-        <Header></Header>
-        <App></App>
+      <div className="h-screen flex flex-col justify-between">
+        <Header />
+        <App />
+        <Footer />
       </div>
     </WalletContextWrapper>
   );
