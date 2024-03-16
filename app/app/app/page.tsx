@@ -125,16 +125,6 @@ export default function App() {
       <div className="h-screen flex flex-col justify-between">
         <Header />
           <div className="h-full v-full p-5 flex flex-col items-start gap-5">
-              {/* <button onClick={onClickInit}>Initialise Treasury</button> */}
-              {/* <button onClick={onClickDirectDeposit}>Deposit to Treasury</button>
-              <button onClick={createEscrow}>Create Escrow</button>
-              <br/>
-              <div className="bg-bg-d h-96 w-64 text-ac-1 flex flex-col items-center gap-5">
-                  <h1 className="font-semibold text-lg">Escrow Status</h1>
-                  <p>Initialized: {"false"}</p>
-                  <p>Input: {"#"} lamports</p>
-              </div> */}
-
         {!hasPosition ? (
           <Container>
               <div className='grid gap-4 md:grid-cols-2 mt-16'>

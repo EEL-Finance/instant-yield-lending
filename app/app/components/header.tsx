@@ -54,24 +54,10 @@ export default function Header() {
         console.log("Program:", program)
     }, [wallet])
 
-    // TODO: Disable button when program is initialized
-    async function onClickInit() {
-        if (!wallet || !program) {
-            console.log("Program not initialised")
-            return;
-        }
-
-        const tx = await program.methods.initializeTreasury()
-            .accounts({ treasury })
-            .rpc()
-
-        console.log(tx)
-    }
-
     return (
         <header className="h-20 w-full bg-bg-d flex flex-row items-center gap-8 px-5 text-ac-1">
             <Link href="/"><h1 className="font-bold text-3xl">EEL Finance</h1></Link>
-            <button onClick={onClickInit} className="text-md font-semibold rounded-md border-2 border-bg-d ml-auto bg-ac-1 h-12 px-3 text-bg-d">Initialise Treasury</button>
+            <Link href="/admin" className="flex items-center justify-center font-semibold rounded-md border-2 border-bg-d ml-auto bg-ac-1 h-12 px-4 text-bg-d">Admin Panel</Link>
             <WalletMultiButton />
         </header>
     )
