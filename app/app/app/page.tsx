@@ -25,15 +25,15 @@ const PROGRAM_ID = new PublicKey("7kB1Hkaq6CVoB4C2pMoKws2ijMEL6Uh5HEP5aJnSUP2W")
 export default function App() {
     // admin
     const [program, setProgram] = useState<anchor.Program<InstantYieldLending>>()
-    const [amount, setAmount] = useState('')
     const [treasury] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("iyl-treasury")], PROGRAM_ID)
 
-    //frontend
+    // frontend
     const { connection } = useConnection()
     const wallet = useAnchorWallet()
     const [hasPosition, setHasPosition] = useState(false);
 
-    // position estimation
+    // position
+    const [lendAmount, setLendAmount] = useState();
     const [stakeAmount, setStakeAmount] = useState();
     const [desiredAmount, setDesiredAmount] = useState();
     const [esimatedLockup, setEstimatedLockup] = useState("...");
@@ -97,6 +97,10 @@ export default function App() {
         console.log("Escrow balance:", balance);
     }
 
+    function lendTokens() {
+        console.log(lendAmount);
+    }
+
     function estimateLockup() {
         console.log("Estimate lockup. Stake: ",stakeAmount," Desired: ",desiredAmount)
         setEstimatedLockup("6");
@@ -109,6 +113,11 @@ export default function App() {
     function unlockCapital() {
         console.log("Unlock capital.")
     }
+
+    const handleLendChange = (event: any) => {
+        const value = event.target.value;
+        setLendAmount(value);
+    };
 
     const handleStakeChange = (event: any) => {
         const value = event.target.value;
@@ -145,10 +154,24 @@ export default function App() {
                       </div>
                   </Card>
                   <Card>
+                      <h1 className='text-2xl font-bold mb-4'>Lend on Solend</h1>
+                      <div className='grid grid-cols-2 gap-3'>
+                          <div className='flex col-span-2 flex-col'>
+                              <label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Enter amount of USDC to lend</label>
+                              <input 
+                                name='lend_amount' placeholder="Lend amount" type="text" className="bg-gray-50 border border-bg-d text-gray-900 text-sm rounded-lg focus:ring-ac-2 focus:border-ac-2 block w-full p-2.5 dark:bg-gray-700 dark:border-ac-3 dark:placeholder-gray-400 dark:text-white dark:focus:ring-ac-2 dark:focus:border-ac-2"
+                                value={lendAmount}
+                                onChange={handleLendChange}
+                              />
+                          </div>
+                          <button onClick={lendTokens} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Lend</button>
+                      </div>
+                  </Card >
+                  <Card>
                       <h1 className='text-2xl font-bold mb-4'>Open Position</h1>
                       <div className='grid grid-cols-2 gap-3'>
                           <div className='flex col-span-2 flex-col'>
-                              <label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Enter amount to stake</label>
+                              <label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Enter amount of cTokens to stake</label>
                               <input 
                                 name='stake_amount' placeholder="Stake amount" type="text" className="bg-gray-50 border border-bg-d text-gray-900 text-sm rounded-lg focus:ring-ac-2 focus:border-ac-2 block w-full p-2.5 dark:bg-gray-700 dark:border-ac-3 dark:placeholder-gray-400 dark:text-white dark:focus:ring-ac-2 dark:focus:border-ac-2"
                                 value={stakeAmount}
