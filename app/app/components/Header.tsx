@@ -69,7 +69,7 @@ export default function Header() {
     }
 
     return (
-        <header className="h-20 w-full bg-bg-d flex flex-row items-center gap-8 px-5 text-ac-1">
+        <header className="h-20 w-full bg-bg-d flex flex-row shrink-0 items-center gap-8 px-5 text-ac-1">
             <Link href="/"><h1 className="font-bold text-3xl">EEL Finance</h1></Link>
             <Link href="/app">App</Link>
 

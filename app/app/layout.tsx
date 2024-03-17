@@ -14,7 +14,9 @@ export default function RootLayout({
         <WalletContextWrapper>
           <div className="h-screen flex flex-col justify-between">
             <Header />
-            {children}
+            <div className="w-full h-full overflow-y-auto">
+              {children}
+            </div>
             <Footer />
           </div>
         </WalletContextWrapper>
