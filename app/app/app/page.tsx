@@ -3,13 +3,10 @@
 /* ------------------------- Imports ------------------------- */
 // Frontend
 import { useEffect, useState } from "react";
-import WalletContextWrapper from "../components/WalletContextWrapper";
 import Container from '../components/Container'
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import Card from '../components/Card';
 // Web3
-import { useAnchorWallet, useConnection, useWallet } from "@solana/wallet-adapter-react";
+import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import * as anchor from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 
@@ -98,8 +95,7 @@ export default function App() {
 		console.log("Escrow balance:", balance);
 	}
 
-    async function lendTokensSolend() { // Solend integration
-        console.log(useWallet());
+    async function lendTokensSolend() { // Solend integration      
         if (!wallet) {
             console.log("Wallet not initialised")
             return;
@@ -169,130 +165,123 @@ export default function App() {
     };
 
     return (
-        <WalletContextWrapper>
-            <div className="h-screen flex flex-col justify-between">
-                <Header />
-                <div className="h-full v-full p-5 flex flex-col items-start gap-5">
-                    {!hasPosition ? (
-                        <Container>
-                            <div className='grid gap-4 md:grid-cols-2 mt-16'>
-                                <div className='col-span-2 grid gap-4'>
-                                </div>
+        <div className="h-full v-full p-5 flex flex-col items-start gap-5">
+            {!hasPosition ? (
+                <Container>
+                    <div className='grid gap-4 md:grid-cols-2 mt-16'>
+                        <div className='col-span-2 grid gap-4'>
+                        </div>
 
-                                <div className="col-span-2 grid gap-4">
-                                    <Card>
-                                        <div className='flex gap-4 justify-around flex-wrap mb-4'>
-                                            <div>
-                                                <p className='text-sm text-slate-400 font-medium mb-1'>Current APY: </p>
-                                                <h1 className='text-2xl font-bold'> 20% </h1>
-                                            </div>
-                                            <div>
-                                                <p className='text-sm text-slate-400 font-medium mb-1'>Underlying protocol address: </p>
-                                                <h1 className='text-2xl font-bold'> ALendwrgiewriw </h1>
-                                            </div>
-                                        </div>
-                                    </Card>
-                                    <Card>
-                                        <h1 className='text-2xl font-bold mb-4'>Lend on Solend</h1>
-                                        <div className='grid grid-cols-2 gap-3'>
-                                            <div className='flex col-span-2 flex-col'>
-                                                <label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Enter amount of USDC to lend</label>
-                                                <input
-                                                    name='lend_amount' placeholder="Lend amount" type="text" className="bg-gray-50 border border-bg-d text-gray-900 text-sm rounded-lg focus:ring-ac-2 focus:border-ac-2 block w-full p-2.5 dark:bg-gray-700 dark:border-ac-3 dark:placeholder-gray-400 dark:text-white dark:focus:ring-ac-2 dark:focus:border-ac-2"
-                                                    value={lendAmount}
-                                                    onChange={handleLendChange}
-                                                />
-                                            </div>
-                                            <button onClick={lendTokensSolend} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Lend</button>
-                                        </div>
-                                    </Card >
-                                    <Card>
-                                        <h1 className='text-2xl font-bold mb-4'>Open Position</h1>
-                                        <div className='grid grid-cols-2 gap-3'>
-                                            <div className='flex col-span-2 flex-col'>
-                                                <label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Enter amount of cTokens to stake</label>
-                                                <input
-                                                    name='stake_amount' placeholder="Stake amount" type="text" className="bg-gray-50 border border-bg-d text-gray-900 text-sm rounded-lg focus:ring-ac-2 focus:border-ac-2 block w-full p-2.5 dark:bg-gray-700 dark:border-ac-3 dark:placeholder-gray-400 dark:text-white dark:focus:ring-ac-2 dark:focus:border-ac-2"
-                                                    value={stakeAmount}
-                                                    onChange={handleStakeChange}
-                                                />
-                                            </div>
-                                            <div className='flex grid-cols-1 flex-col relative'>
-                                                <label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Enter desired amount</label>
-                                                <input
-                                                    name='desired_amount' placeholder="Desired amount" type="text" className="bg-gray-50 border border-bg-d text-gray-900 text-sm rounded-lg focus:ring-ac-2 focus:border-ac-2 block w-full p-2.5 dark:bg-gray-700 dark:border-ac-3 dark:placeholder-gray-400 dark:text-white dark:focus:ring-ac-2 dark:focus:border-ac-2"
-                                                    value={desiredAmount}
-                                                    onChange={handleDesiredChange}
-                                                />
-                                            </div>
-                                            <button onClick={estimateLockup} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Estimate Lockup Period</button>
-                                        </div>
-                                        <div className='grid grid-cols-2 gap-2 mt-8'>
-                                            <h1 className='text-xl col-span-2 font-bold'><span className='text-m font-normal relative text-border-bg-d'>Estimated lockup period: </span>{esimatedLockup} months</h1>
-                                            <button onClick={stakeAndReceive} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Stake & Receive</button>
-                                        </div>
-                                    </Card >
+                        <div className="col-span-2 grid gap-4">
+                            <Card>
+                                <div className='flex gap-4 justify-around flex-wrap mb-4'>
+                                    <div>
+                                        <p className='text-sm text-slate-400 font-medium mb-1'>Current APY: </p>
+                                        <h1 className='text-2xl font-bold'> 20% </h1>
+                                    </div>
+                                    <div>
+                                        <p className='text-sm text-slate-400 font-medium mb-1'>Underlying protocol address: </p>
+                                        <h1 className='text-2xl font-bold'> ALendwrgiewriw </h1>
+                                    </div>
                                 </div>
-                                <div className='col-span-2'>
+                            </Card>
+                            <Card>
+                                <h1 className='text-2xl font-bold mb-4'>Lend on Solend</h1>
+                                <div className='grid grid-cols-2 gap-3'>
+                                    <div className='flex col-span-2 flex-col'>
+                                        <label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Enter amount of USDC to lend</label>
+                                        <input
+                                            name='lend_amount' placeholder="Lend amount" type="text" className="bg-gray-50 border border-bg-d text-gray-900 text-sm rounded-lg focus:ring-ac-2 focus:border-ac-2 block w-full p-2.5 dark:bg-gray-700 dark:border-ac-3 dark:placeholder-gray-400 dark:text-white dark:focus:ring-ac-2 dark:focus:border-ac-2"
+                                            value={lendAmount}
+                                            onChange={handleLendChange}
+                                        />
+                                    </div>
+                                    <button onClick={lendTokensSolend} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Lend</button>
                                 </div>
-                            </div>
-                        </Container>
-                    ) : (
-                        <Container>
-                            <div className='grid gap-4 md:grid-cols-2 mt-16'>
-                                <div className='col-span-2 grid gap-4'>
+                            </Card >
+                            <Card>
+                                <h1 className='text-2xl font-bold mb-4'>Open Position</h1>
+                                <div className='grid grid-cols-2 gap-3'>
+                                    <div className='flex col-span-2 flex-col'>
+                                        <label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Enter amount of cTokens to stake</label>
+                                        <input
+                                            name='stake_amount' placeholder="Stake amount" type="text" className="bg-gray-50 border border-bg-d text-gray-900 text-sm rounded-lg focus:ring-ac-2 focus:border-ac-2 block w-full p-2.5 dark:bg-gray-700 dark:border-ac-3 dark:placeholder-gray-400 dark:text-white dark:focus:ring-ac-2 dark:focus:border-ac-2"
+                                            value={stakeAmount}
+                                            onChange={handleStakeChange}
+                                        />
+                                    </div>
+                                    <div className='flex grid-cols-1 flex-col relative'>
+                                        <label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Enter desired amount</label>
+                                        <input
+                                            name='desired_amount' placeholder="Desired amount" type="text" className="bg-gray-50 border border-bg-d text-gray-900 text-sm rounded-lg focus:ring-ac-2 focus:border-ac-2 block w-full p-2.5 dark:bg-gray-700 dark:border-ac-3 dark:placeholder-gray-400 dark:text-white dark:focus:ring-ac-2 dark:focus:border-ac-2"
+                                            value={desiredAmount}
+                                            onChange={handleDesiredChange}
+                                        />
+                                    </div>
+                                    <button onClick={estimateLockup} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Estimate Lockup Period</button>
                                 </div>
+                                <div className='grid grid-cols-2 gap-2 mt-8'>
+                                    <h1 className='text-xl col-span-2 font-bold'><span className='text-m font-normal relative text-border-bg-d'>Estimated lockup period: </span>{esimatedLockup} months</h1>
+                                    <button onClick={stakeAndReceive} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Stake & Receive</button>
+                                </div>
+                            </Card >
+                        </div>
+                        <div className='col-span-2'>
+                        </div>
+                    </div>
+                </Container>
+            ) : (
+                <Container>
+                    <div className='grid gap-4 md:grid-cols-2 mt-16'>
+                        <div className='col-span-2 grid gap-4'>
+                        </div>
 
-                                <div className="col-span-2 grid gap-4">
-                                    <Card>
-                                        <div className='flex gap-4 justify-around flex-wrap mb-4'>
-                                            <div>
-                                                <p className='text-sm text-slate-400 font-medium mb-1'>Current APY: </p>
-                                                <h1 className='text-2xl font-bold'> 20% </h1>
-                                            </div>
-                                            <div>
-                                                <p className='text-sm text-slate-400 font-medium mb-1'>Staked amount: </p>
-                                                <h1 className='text-2xl font-bold'> $100 </h1>
-                                            </div>
-                                            <div>
-                                                <p className='text-sm text-slate-400 font-medium mb-1'>Received amount: </p>
-                                                <h1 className='text-2xl font-bold'> $10 </h1>
-                                            </div>
-                                            <div>
-                                                <p className='text-sm text-slate-400 font-medium mb-1'>Lockup left: </p>
-                                                <h1 className='text-2xl font-bold'> 10 days </h1>
-                                            </div>
-                                        </div>
-                                    </Card>
-                                    <Card>
-                                        <div className='grid grid-cols-2 gap-2'>
-                                            <button onClick={unlockCapital} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Unlock capital</button>
-                                        </div>
-                                    </Card >
-                                    <Card>
-                                        <h1 className='text-2xl font-bold mb-4'>Withdraw on Solend</h1>
-                                        <div className='grid grid-cols-2 gap-3'>
-                                            <div className='flex col-span-2 flex-col'>
-                                                <label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Enter amount of cTokens to withdraw</label>
-                                                <input
-                                                    name='withdraw_amount' placeholder="Withdraw amount" type="text" className="bg-gray-50 border border-bg-d text-gray-900 text-sm rounded-lg focus:ring-ac-2 focus:border-ac-2 block w-full p-2.5 dark:bg-gray-700 dark:border-ac-3 dark:placeholder-gray-400 dark:text-white dark:focus:ring-ac-2 dark:focus:border-ac-2"
-                                                    value={withdrawAmount}
-                                                    onChange={handleWithdrawChange}
-                                                />
-                                            </div>
-                                            <button onClick={withdrawTokensSolend} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Withdraw</button>
-                                        </div>
-                                    </Card >
+                        <div className="col-span-2 grid gap-4">
+                            <Card>
+                                <div className='flex gap-4 justify-around flex-wrap mb-4'>
+                                    <div>
+                                        <p className='text-sm text-slate-400 font-medium mb-1'>Current APY: </p>
+                                        <h1 className='text-2xl font-bold'> 20% </h1>
+                                    </div>
+                                    <div>
+                                        <p className='text-sm text-slate-400 font-medium mb-1'>Staked amount: </p>
+                                        <h1 className='text-2xl font-bold'> $100 </h1>
+                                    </div>
+                                    <div>
+                                        <p className='text-sm text-slate-400 font-medium mb-1'>Received amount: </p>
+                                        <h1 className='text-2xl font-bold'> $10 </h1>
+                                    </div>
+                                    <div>
+                                        <p className='text-sm text-slate-400 font-medium mb-1'>Lockup left: </p>
+                                        <h1 className='text-2xl font-bold'> 10 days </h1>
+                                    </div>
                                 </div>
-                                <div className='col-span-2'>
+                            </Card>
+                            <Card>
+                                <div className='grid grid-cols-2 gap-2'>
+                                    <button onClick={unlockCapital} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Unlock capital</button>
                                 </div>
-                            </div>
-                        </Container>
-                    )}
-
-				</div>
-				<Footer />
-			</div>
-		</WalletContextWrapper>
+                            </Card >
+                            <Card>
+                                <h1 className='text-2xl font-bold mb-4'>Withdraw on Solend</h1>
+                                <div className='grid grid-cols-2 gap-3'>
+                                    <div className='flex col-span-2 flex-col'>
+                                        <label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Enter amount of cTokens to withdraw</label>
+                                        <input
+                                            name='withdraw_amount' placeholder="Withdraw amount" type="text" className="bg-gray-50 border border-bg-d text-gray-900 text-sm rounded-lg focus:ring-ac-2 focus:border-ac-2 block w-full p-2.5 dark:bg-gray-700 dark:border-ac-3 dark:placeholder-gray-400 dark:text-white dark:focus:ring-ac-2 dark:focus:border-ac-2"
+                                            value={withdrawAmount}
+                                            onChange={handleWithdrawChange}
+                                        />
+                                    </div>
+                                    <button onClick={withdrawTokensSolend} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Withdraw</button>
+                                </div>
+                            </Card >
+                        </div>
+                        <div className='col-span-2'>
+                        </div>
+                    </div>
+                </Container>
+            )}
+        </div>
 	)
 }

@@ -3,9 +3,6 @@
 /* ------------------------- Imports ------------------------- */
 // Frontend
 import { useState } from "react";
-import WalletContextWrapper from "../components/WalletContextWrapper";
-import Header from "../components/Header";
-import Footer from "../components/Footer";
 import Container from "../components/Container";
 import Card from "../components/Card";
 // Web3
@@ -35,11 +32,6 @@ export default function Main() {
   const [treasury] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("iyl-treasury")], PROGRAM_ID)
   const [program, setProgram] = useState<anchor.Program<InstantYieldLending>>()
 
-  function depositToTreasury() {
-
-  }
-
-  // TODO: Disable button when program is initialized
   async function initializeTreasury() {
       if (!wallet || !program) {
           console.log("Program not initialised")
@@ -53,41 +45,39 @@ export default function Main() {
       console.log(tx)
   }
 
+  function depositToTreasury() {
+
+  }
+
   function createEscrow() {
 
   }
 
   return (
-    <WalletContextWrapper>
-      <div className="h-screen flex flex-col justify-between">
-        <Header />
-        <Container>
-          <Card>
-            <h1 className='text-2xl font-bold mb-4'>Settings</h1>
-            <div className='grid grid-cols-2 gap-3'>
-              <div className='flex grid-cols-1 flex-col relative'>
-              <button onClick={initializeTreasury} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Initialize Treasury</button>
-                <label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Deposit to treasury: </label>
-                <input
-                  name='desired_amount' placeholder="Desired amount" type="text" className="bg-gray-50 border border-bg-d text-gray-900 text-sm rounded-lg focus:ring-ac-2 focus:border-ac-2 block w-full p-2.5 dark:bg-gray-700 dark:border-ac-3 dark:placeholder-gray-400 dark:text-white dark:focus:ring-ac-2 dark:focus:border-ac-2"
-                  value={depositTreasury}
-                  onChange={handleDepositTreasuryChange}
-                />
-              </div>
-              <button onClick={depositToTreasury} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Deposit</button>
-            </div>
-          </Card >
-          <Card>
-          <button onClick={createEscrow} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Create Escrow</button>
-            <div className="bg-bg-d h-96 w-64 text-ac-1 flex flex-col items-center gap-5">
-                  <h1 className="font-semibold text-lg">Escrow Status</h1>
-                  <p>Initialized: {"false"}</p>
-                  <p>Input: {"#"} lamports</p>
-              </div>
-          </Card>
-        </Container>
-        <Footer />
-      </div>
-    </WalletContextWrapper>
+		<Container>
+			<Card>
+				<h1 className='text-2xl font-bold mb-4'>Settings</h1>
+				<div className='grid grid-cols-2 gap-3'>
+					<div className='flex grid-cols-1 flex-col relative'>
+					<button onClick={initializeTreasury} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Initialize Treasury</button>
+						<label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Deposit to treasury: </label>
+						<input
+						name='desired_amount' placeholder="Desired amount" type="text" className="bg-gray-50 border border-bg-d text-gray-900 text-sm rounded-lg focus:ring-ac-2 focus:border-ac-2 block w-full p-2.5 dark:bg-gray-700 dark:border-ac-3 dark:placeholder-gray-400 dark:text-white dark:focus:ring-ac-2 dark:focus:border-ac-2"
+						value={depositTreasury}
+						onChange={handleDepositTreasuryChange}
+						/>
+					</div>
+					<button onClick={depositToTreasury} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Deposit</button>
+				</div>
+			</Card >
+			<Card>
+			<button onClick={createEscrow} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Create Escrow</button>
+				<div className="bg-bg-d h-96 w-64 text-ac-1 flex flex-col items-center gap-5">
+					<h1 className="font-semibold text-lg">Escrow Status</h1>
+					<p>Initialized: {"false"}</p>
+					<p>Input: {"#"} lamports</p>
+				</div>
+			</Card>
+		</Container>
   );
 }
