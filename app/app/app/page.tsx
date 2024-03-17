@@ -9,7 +9,7 @@ import Header from "../components/Header";
 import Footer from "../components/Footer";
 import Card from '../components/Card';
 // Web3
-import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import { useAnchorWallet, useConnection, useWallet } from "@solana/wallet-adapter-react";
 import * as anchor from "@coral-xyz/anchor";
 import { PublicKey } from "@solana/web3.js";
 
@@ -32,8 +32,8 @@ export default function App() {
     const [treasury] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("iyl-treasury")], PROGRAM_ID)
 
     // frontend
-    const { connection } = useConnection()
-    const wallet = useAnchorWallet()
+    const { connection } = useConnection();
+    const wallet = useAnchorWallet();
     const [hasPosition, setHasPosition] = useState(false);
 
     // position
@@ -41,6 +41,7 @@ export default function App() {
     const [stakeAmount, setStakeAmount] = useState();
     const [desiredAmount, setDesiredAmount] = useState();
     const [esimatedLockup, setEstimatedLockup] = useState("...");
+    const [withdrawAmount, setWithdrawAmount] = useState();
 
 
 	// Setup provider and program
@@ -58,10 +59,6 @@ export default function App() {
 
 		const program = new anchor.Program(idl as anchor.Idl, PROGRAM_ID) as unknown as anchor.Program<InstantYieldLending> // Haven't found a better way to use the program types
 		setProgram(program)
-
-        if (false) { // Check if user has opened a position
-            setHasPosition(true);
-        }
 
     }, [wallet, connection])
 
@@ -101,10 +98,15 @@ export default function App() {
 		console.log("Escrow balance:", balance);
 	}
 
-    async function lendTokens() { // Solend integration
+    async function lendTokensSolend() { // Solend integration
+        console.log(useWallet());
+        if (!wallet) {
+            console.log("Wallet not initialised")
+            return;
+        }
         console.log("Connection: ", connection) // Connection is underfined
         try {
-            const accounts = await connection.getProgramAccounts(
+            const accounts = await anchor.getProvider().connection.getProgramAccounts(
                 new PublicKey(SOLEND_PROGRAM_ID),
                 {
                     commitment: connection.commitment,
@@ -123,10 +125,14 @@ export default function App() {
                 }
             );
             console.log("Number of users:", accounts.length);
-            console.log(accounts)
+            console.log(accounts);
         } catch(err) {
-            console.error(err)
+            console.error(err);
         }
+    }
+
+    async function withdrawTokensSolend() {
+        console.log("Withdraw");
     }
 
     function estimateLockup() {
@@ -155,6 +161,11 @@ export default function App() {
     const handleDesiredChange = (event: any) => {
         const value = event.target.value;
         setDesiredAmount(value);
+    };
+
+    const handleWithdrawChange = (event: any) => {
+        const value = event.target.value;
+        setWithdrawAmount(value);
     };
 
     return (
@@ -192,7 +203,7 @@ export default function App() {
                                                     onChange={handleLendChange}
                                                 />
                                             </div>
-                                            <button onClick={lendTokens} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Lend</button>
+                                            <button onClick={lendTokensSolend} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Lend</button>
                                         </div>
                                     </Card >
                                     <Card>
@@ -256,6 +267,20 @@ export default function App() {
                                     <Card>
                                         <div className='grid grid-cols-2 gap-2'>
                                             <button onClick={unlockCapital} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Unlock capital</button>
+                                        </div>
+                                    </Card >
+                                    <Card>
+                                        <h1 className='text-2xl font-bold mb-4'>Withdraw on Solend</h1>
+                                        <div className='grid grid-cols-2 gap-3'>
+                                            <div className='flex col-span-2 flex-col'>
+                                                <label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Enter amount of cTokens to withdraw</label>
+                                                <input
+                                                    name='withdraw_amount' placeholder="Withdraw amount" type="text" className="bg-gray-50 border border-bg-d text-gray-900 text-sm rounded-lg focus:ring-ac-2 focus:border-ac-2 block w-full p-2.5 dark:bg-gray-700 dark:border-ac-3 dark:placeholder-gray-400 dark:text-white dark:focus:ring-ac-2 dark:focus:border-ac-2"
+                                                    value={withdrawAmount}
+                                                    onChange={handleWithdrawChange}
+                                                />
+                                            </div>
+                                            <button onClick={withdrawTokensSolend} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Withdraw</button>
                                         </div>
                                     </Card >
                                 </div>
