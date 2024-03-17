@@ -8,18 +8,19 @@ import Card from '../components/Card';
 // Web3
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import * as anchor from "@coral-xyz/anchor";
-import { PublicKey } from "@solana/web3.js";
+import * as web3 from "@solana/web3.js";
 
 import { InstantYieldLending } from "../lib/types/instant_yield_lending";
 import idl from "../lib/idl/instant_yield_lending.json";
 
 
 /* ------------------------ Variables ------------------------ */
-const PROGRAM_ID = new PublicKey("8yamCrCUweKhUfAhQSyR8pvKUgRcFc2SeuXbLECvkX7i")
+const PROGRAM_ID = new web3.PublicKey("8yamCrCUweKhUfAhQSyR8pvKUgRcFc2SeuXbLECvkX7i")
 
-// Solend 
-const SOLEND_PROGRAM_ID = "So1endDq2YkqhipRh3WViPa8hdiSpxWy6z3Z6tMCpAo";
-const LENDING_MARKET_MAIN = "4UpD2fh7xH3VP9QQaXtsS1YY3bxzWhtfpks7FatyKvdY";
+// Solend (devnet)
+const SOLEND_PROGRAM_ID = "ALend7Ketfx5bxh6ghsCDXAoDrhvEmsXT3cynB6aPLgx";
+const LENDING_MARKET_MAIN = "GvjoVKNjBvQcFaSKUW1gTE7DxhSpjHbE69umVR5nPuQp";
+const RESERVE_ACCOUNT_ID = "BgxfHJDzm44T7XG68MYKx7YisTjZu73tVovyZSjJMpmw"; // USDC
 const OBLIGATION_LEN = 1300;
 
 /* ------------------------ Components ----------------------- */
@@ -32,12 +33,14 @@ export default function App() {
     const { connection } = useConnection();
     const wallet = useAnchorWallet();
     const [hasPosition, setHasPosition] = useState(false);
+    const [currentAPR, setCurrentAPR] = useState("Loading...");
+    const [showStakeAndReceive, setStakeAndReceive] = useState(false);
 
     // position
     const [lendAmount, setLendAmount] = useState();
     const [stakeAmount, setStakeAmount] = useState();
     const [desiredAmount, setDesiredAmount] = useState();
-    const [esimatedLockup, setEstimatedLockup] = useState("...");
+    const [esimatedLockup, setEstimatedLockup] = useState("Loading...");
     const [withdrawAmount, setWithdrawAmount] = useState();
 
 
@@ -56,8 +59,26 @@ export default function App() {
 
 		const program = new anchor.Program(idl as anchor.Idl, PROGRAM_ID) as unknown as anchor.Program<InstantYieldLending> // Haven't found a better way to use the program types
 		setProgram(program)
+        getCurrentAPR();
 
     }, [wallet, connection])
+
+    async function getCurrentAPR() {
+        const apiUrl = `https://api.solend.fi/v1/reserves/historical-interest-rates?ids=${RESERVE_ACCOUNT_ID}&span=1w`;
+        try {
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+    
+            const historicalRates = data?.[RESERVE_ACCOUNT_ID];
+            const supplyAPR = historicalRates[historicalRates.length - 1].supplyAPR;
+            const supplyAPRPercentage = supplyAPR * 100;
+            setCurrentAPR(supplyAPRPercentage.toFixed(2));
+        } catch (error) {
+            console.error('Error fetching data from Solend API:', error);
+            throw error;
+        }
+    }
+    
 
 	async function onClickDirectDeposit() {
 		if (!wallet || !program) {
@@ -95,37 +116,47 @@ export default function App() {
 		console.log("Escrow balance:", balance);
 	}
 
-    async function lendTokensSolend() { // Solend integration      
-        if (!wallet) {
-            console.log("Wallet not initialised")
-            return;
-        }
-        console.log("Connection: ", connection) // Connection is underfined
+    // async function lendTokensSolend() { // Solend integration      
+    //     if (!wallet) {
+    //         alert("Wallet not initialised")
+    //         return;
+    //     }
+    //     console.log("Connection: ", solanaConnection) // Connection
+    //     try {
+    //         // Create one or more (may contain setup accuont creation txns) to perform a Solend action.
+    //         const accounts = await solanaConnection.getProgramAccounts(
+    //             new PublicKey(SOLEND_PROGRAM_ID),
+    //             {
+    //                 commitment: connection.commitment,
+    //                 filters: [
+    //                     {
+    //                         memcmp: {
+    //                             offset: 10,
+    //                             bytes: LENDING_MARKET_MAIN,
+    //                         },
+    //                     },
+    //                     {
+    //                         dataSize: OBLIGATION_LEN,
+    //                     },
+    //                 ],
+    //                 encoding: "base64",
+    //             }
+    //         );
+    //         console.log("Number of users:", accounts.length);
+    //         console.log(accounts);
+    //     } catch(err) {
+    //         console.error(err);
+    //     }
+    // }
+
+    async function lendTokensSolend(): Promise<void> {
         try {
-            const accounts = await anchor.getProvider().connection.getProgramAccounts(
-                new PublicKey(SOLEND_PROGRAM_ID),
-                {
-                    commitment: connection.commitment,
-                    filters: [
-                        {
-                            memcmp: {
-                                offset: 10,
-                                bytes: LENDING_MARKET_MAIN,
-                            },
-                        },
-                        {
-                            dataSize: OBLIGATION_LEN,
-                        },
-                    ],
-                    encoding: "base64",
-                }
-            );
-            console.log("Number of users:", accounts.length);
-            console.log(accounts);
-        } catch(err) {
-            console.error(err);
+            console.log("Fuck this shit")
+        } catch (error) {
+          console.error('Error supplying tokens to Solend:', error);
+          throw error;
         }
-    }
+      }
 
     async function withdrawTokensSolend() {
         console.log("Withdraw");
@@ -134,6 +165,7 @@ export default function App() {
     function estimateLockup() {
         console.log("Estimate lockup. Stake: ", stakeAmount, " Desired: ", desiredAmount)
         setEstimatedLockup("6");
+        setStakeAndReceive(true);
     }
 
     function stakeAndReceive() {
@@ -176,12 +208,12 @@ export default function App() {
                             <Card>
                                 <div className='flex gap-4 justify-around flex-wrap mb-4'>
                                     <div>
-                                        <p className='text-sm text-slate-400 font-medium mb-1'>Current APY: </p>
-                                        <h1 className='text-2xl font-bold'> 20% </h1>
+                                        <p className='text-sm text-slate-400 font-medium mb-1'>Current supply APR on <a href="https://solend.fi/" className="text-blue-500 hover:underline">Solend</a>: </p>
+                                        <h1 className='text-2xl font-bold'> {currentAPR}% </h1>
                                     </div>
                                     <div>
                                         <p className='text-sm text-slate-400 font-medium mb-1'>Underlying protocol address: </p>
-                                        <h1 className='text-2xl font-bold'> ALendwrgiewriw </h1>
+                                        <h1 className='text-2xl font-bold'> <a href="https://explorer.solana.com/address/4UpD2fh7xH3VP9QQaXtsS1YY3bxzWhtfpks7FatyKvdY" className="text-blue-500 hover:underline">4UpD2fh7xH3VP9QQaXtsS1YY3bxzWhtfpks7FatyKvdY</a></h1>
                                     </div>
                                 </div>
                             </Card>
@@ -220,10 +252,14 @@ export default function App() {
                                     </div>
                                     <button onClick={estimateLockup} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Estimate Lockup Period</button>
                                 </div>
+                                {showStakeAndReceive ? (
                                 <div className='grid grid-cols-2 gap-2 mt-8'>
                                     <h1 className='text-xl col-span-2 font-bold'><span className='text-m font-normal relative text-border-bg-d'>Estimated lockup period: </span>{esimatedLockup} months</h1>
                                     <button onClick={stakeAndReceive} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Stake & Receive</button>
                                 </div>
+                                ) : 
+                                <div></div>
+                            }
                             </Card >
                         </div>
                         <div className='col-span-2'>
@@ -240,8 +276,8 @@ export default function App() {
                             <Card>
                                 <div className='flex gap-4 justify-around flex-wrap mb-4'>
                                     <div>
-                                        <p className='text-sm text-slate-400 font-medium mb-1'>Current APY: </p>
-                                        <h1 className='text-2xl font-bold'> 20% </h1>
+                                        <p className='text-sm text-slate-400 font-medium mb-1'>Current APR: </p>
+                                        <h1 className='text-2xl font-bold'> {currentAPR}% </h1>
                                     </div>
                                     <div>
                                         <p className='text-sm text-slate-400 font-medium mb-1'>Staked amount: </p>
