@@ -19,7 +19,7 @@ export default function Main() {
                 <p className='mb-6 text-slate-400 max-w-lg lg:text-lg'>Offers users immediate access to funds without selling their crypto assets or relying on loans. Users contribute capital, receiving instant access to their desired amount. This capital is locked and invested, generating a constant APY until it covers the requested sum, providing a unique financial solution in the crypto space.</p>
                 <div>
                 <Link href='/app'>
-                  <button className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Go to Dashboard
+                  <button className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Launch App
                   </button>
                 </Link>
                 </div>
