@@ -253,13 +253,13 @@ export default function App() {
                                     <button onClick={estimateLockup} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Estimate Lockup Period</button>
                                 </div>
                                 {showStakeAndReceive ? (
-                                <div className='grid grid-cols-2 gap-2 mt-8'>
-                                    <h1 className='text-xl col-span-2 font-bold'><span className='text-m font-normal relative text-border-bg-d'>Estimated lockup period: </span>{esimatedLockup} months</h1>
-                                    <button onClick={stakeAndReceive} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Stake & Receive</button>
-                                </div>
-                                ) : 
-                                <div></div>
-                            }
+                                    <div className='grid grid-cols-2 gap-2 mt-8'>
+                                        <h1 className='text-xl col-span-2 font-bold'><span className='text-m font-normal relative text-border-bg-d'>Estimated lockup period: </span>{esimatedLockup} months</h1>
+                                        <button onClick={stakeAndReceive} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Stake & Receive</button>
+                                    </div>
+                                    ) : 
+                                    <div></div>
+                                }
                             </Card >
                         </div>
                         <div className='col-span-2'>

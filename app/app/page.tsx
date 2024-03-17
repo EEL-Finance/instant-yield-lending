@@ -17,13 +17,10 @@ export default function Main() {
 					</Link>
 				</div>
 			</div>
+      <img className='p-4' src='/logo.png' alt='logo-image' />
 			<div>
-			<Link href='/app'>
-				<button className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Go to Dashboard</button>
-			</Link>
 			</div>
 		</div>
-		<img className='p-4' src='/logo.png' alt='logo-image' />
 	</Container>	
   );
 }
