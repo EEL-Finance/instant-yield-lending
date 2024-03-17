@@ -18,7 +18,8 @@ import idl from "../lib/idl/instant_yield_lending.json";
 
 
 /* ------------------------ Variables ------------------------ */
-const PROGRAM_ID = new PublicKey("7kB1Hkaq6CVoB4C2pMoKws2ijMEL6Uh5HEP5aJnSUP2W")
+const PROGRAM_ID = new PublicKey("8yamCrCUweKhUfAhQSyR8pvKUgRcFc2SeuXbLECvkX7i")
+
 // Solend 
 const SOLEND_PROGRAM_ID = "So1endDq2YkqhipRh3WViPa8hdiSpxWy6z3Z6tMCpAo";
 const LENDING_MARKET_MAIN = "4UpD2fh7xH3VP9QQaXtsS1YY3bxzWhtfpks7FatyKvdY";
@@ -26,12 +27,6 @@ const OBLIGATION_LEN = 1300;
 
 /* ------------------------ Components ----------------------- */
 export default function App() {
-	const [program, setProgram] = useState<anchor.Program<InstantYieldLending>>()
-	const [amount, setAmount] = useState('')
-
-	const { connection } = useConnection()
-	const wallet = useAnchorWallet()
-
     // admin
     const [program, setProgram] = useState<anchor.Program<InstantYieldLending>>()
     const [treasury] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("iyl-treasury")], PROGRAM_ID)
@@ -68,7 +63,7 @@ export default function App() {
             setHasPosition(true);
         }
 
-    }, [wallet])
+    }, [wallet, connection])
 
 	async function onClickDirectDeposit() {
 		if (!wallet || !program) {

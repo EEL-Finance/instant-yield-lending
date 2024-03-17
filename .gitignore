@@ -8,8 +8,10 @@ node_modules
 test-ledger
 .yarn
 cp-front.sh
+bun.lockb
 
 app/node_modules
 app/.vscode
 app/.next
 app/.env
+app/bun.lockb

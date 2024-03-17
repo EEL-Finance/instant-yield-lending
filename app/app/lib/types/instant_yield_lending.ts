@@ -50,6 +50,32 @@ export type InstantYieldLending = {
       ]
     },
     {
+      "name": "treasuryDirectWithdraw",
+      "accounts": [
+        {
+          "name": "treasury",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "signer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "sol",
+          "type": "u64"
+        }
+      ]
+    },
+    {
       "name": "initializeEscrow",
       "accounts": [
         {
@@ -139,6 +165,32 @@ export const IDL: InstantYieldLending = {
         },
         {
           "name": "payer",
+          "isMut": true,
+          "isSigner": true
+        },
+        {
+          "name": "systemProgram",
+          "isMut": false,
+          "isSigner": false
+        }
+      ],
+      "args": [
+        {
+          "name": "sol",
+          "type": "u64"
+        }
+      ]
+    },
+    {
+      "name": "treasuryDirectWithdraw",
+      "accounts": [
+        {
+          "name": "treasury",
+          "isMut": true,
+          "isSigner": false
+        },
+        {
+          "name": "signer",
           "isMut": true,
           "isSigner": true
         },

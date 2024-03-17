@@ -5,7 +5,7 @@ seeds = false
 skip-lint = false
 
 [programs.localnet]
-instant_yield_lending = "7kB1Hkaq6CVoB4C2pMoKws2ijMEL6Uh5HEP5aJnSUP2W"
+instant_yield_lending = "8yamCrCUweKhUfAhQSyR8pvKUgRcFc2SeuXbLECvkX7i"
 
 [registry]
 url = "https://api.apr.dev"

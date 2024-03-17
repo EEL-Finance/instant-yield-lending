@@ -16,7 +16,7 @@ import idl from "../lib/idl/instant_yield_lending.json";
 
 
 /* ------------------------ Variables ------------------------ */
-const PROGRAM_ID = new PublicKey("7kB1Hkaq6CVoB4C2pMoKws2ijMEL6Uh5HEP5aJnSUP2W")
+const PROGRAM_ID = new PublicKey("8yamCrCUweKhUfAhQSyR8pvKUgRcFc2SeuXbLECvkX7i")
 
 // This fixes the hydration error that is created by <WalletMultiButton />
 const WalletMultiButton = dynamic(
@@ -52,7 +52,7 @@ export default function Header() {
         setProgram(program)
 
         console.log("Program:", program)
-    }, [wallet])
+    }, [wallet, connection])
 
     // TODO: Disable button when program is initialized
     async function onClickInit() {
@@ -72,7 +72,7 @@ export default function Header() {
         <header className="h-20 w-full bg-bg-d flex flex-row items-center gap-8 px-5 text-ac-1">
             <Link href="/"><h1 className="font-bold text-3xl">EEL Finance</h1></Link>
             <Link href="/app">App</Link>
-            <Link href="/debug">Debug</Link>
+            <Link href="/admin">Admin</Link>
 
             <button onClick={onClickInit} className="text-md font-semibold rounded-md border-2 border-bg-d ml-auto bg-ac-1 h-12 px-3 text-bg-d">Initialise Treasury</button>
             <WalletMultiButton />

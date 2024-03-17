@@ -15,9 +15,7 @@ export default function Main() {
         <Container>
             <div className='grid lg:grid-cols-2 mt-12 gap-8 px-4 lg:px-0 items-center justify-center'>
               <div className='flex mb-12  flex-col justify-center'>
-                <h1 className='text-4xl lg:text-6xl font-bold mb-6'>
-                  Instant Yield Lending (IYL)
-                </h1>
+                <h1 className='text-4xl lg:text-6xl font-bold mb-6'>Instant Yield Lending (IYL)</h1>
                 <p className='mb-6 text-slate-400 max-w-lg lg:text-lg'>Offers users immediate access to funds without selling their crypto assets or relying on loans. Users contribute capital, receiving instant access to their desired amount. This capital is locked and invested, generating a constant APY until it covers the requested sum, providing a unique financial solution in the crypto space.</p>
                 <div>
                 <Link href='/app'>

@@ -2,13 +2,12 @@
 
 /* ------------------------- Imports ------------------------- */
 // Frontend
-import { useEffect, useState, Fragment } from "react";
-import WalletContextWrapper from "../components/walletContextWrapper";
-import Header from "../components/header";
-import Footer from "../components/footer";
+import { useState } from "react";
+import WalletContextWrapper from "../components/WalletContextWrapper";
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import Container from "../components/Container";
 import Card from "../components/Card";
-import Link from 'next/link';
 // Web3
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import * as anchor from "@coral-xyz/anchor";
@@ -19,25 +18,28 @@ import idl from "../lib/idl/instant_yield_lending.json";
 
 
 /* ------------------------ Variables ------------------------ */
-const PROGRAM_ID = new PublicKey("7kB1Hkaq6CVoB4C2pMoKws2ijMEL6Uh5HEP5aJnSUP2W")
+const PROGRAM_ID = new PublicKey("8yamCrCUweKhUfAhQSyR8pvKUgRcFc2SeuXbLECvkX7i")
+
 
 /* ------------------------ Components ----------------------- */
 export default function Main() {
   const [depositTreasury, setDepositTreasury] = useState();
+  
   const handleDepositTreasuryChange = (event: any) => {
     const value = event.target.value;
     setDepositTreasury(value);
   };
+  
   const wallet = useAnchorWallet()
+ 
   const [treasury] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("iyl-treasury")], PROGRAM_ID)
   const [program, setProgram] = useState<anchor.Program<InstantYieldLending>>()
-
 
   function depositToTreasury() {
 
   }
 
-    // TODO: Disable button when program is initialized
+  // TODO: Disable button when program is initialized
   async function initializeTreasury() {
       if (!wallet || !program) {
           console.log("Program not initialised")
