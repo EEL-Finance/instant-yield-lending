@@ -1,9 +1,9 @@
 /* ------------------------- Imports ------------------------- */
 // Frontend
-import WalletContextWrapper from "./components/walletContextWrapper";
-import Header from "./components/header";
-import Footer from "./components/footer";
+import WalletContextWrapper from "./components/WalletContextWrapper";
 import Container from "./components/Container";
+import Header from "./components/Header";
+import Footer from "./components/Footer";
 import Link from 'next/link';
 
 /* ------------------------ Components ----------------------- */

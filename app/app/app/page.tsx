@@ -2,12 +2,12 @@
 
 /* ------------------------- Imports ------------------------- */
 // Frontend
-import { useEffect, useState, Fragment } from "react";
+import { useEffect, useState } from "react";
+import WalletContextWrapper from "../components/WalletContextWrapper";
 import Container from '../components/Container'
+import Header from "../components/Header";
+import Footer from "../components/Footer";
 import Card from '../components/Card';
-import WalletContextWrapper from "../components/walletContextWrapper";
-import Header from "../components/header";
-import Footer from "../components/footer";
 // Web3
 import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
 import * as anchor from "@coral-xyz/anchor";
@@ -26,6 +26,12 @@ const OBLIGATION_LEN = 1300;
 
 /* ------------------------ Components ----------------------- */
 export default function App() {
+	const [program, setProgram] = useState<anchor.Program<InstantYieldLending>>()
+	const [amount, setAmount] = useState('')
+
+	const { connection } = useConnection()
+	const wallet = useAnchorWallet()
+
     // admin
     const [program, setProgram] = useState<anchor.Program<InstantYieldLending>>()
     const [treasury] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("iyl-treasury")], PROGRAM_ID)
@@ -42,21 +48,21 @@ export default function App() {
     const [esimatedLockup, setEstimatedLockup] = useState("...");
 
 
-    // Setup provider and program
-    useEffect(() => {
-        if (!wallet) { return }
-        console.log("Wallet:", wallet.publicKey.toBase58())
+	// Setup provider and program
+	useEffect(() => {
+		if (!wallet) { return }
+		console.log("Wallet:", wallet.publicKey.toBase58())
 
-        let provider: anchor.Provider
-        try {
-            provider = anchor.getProvider()
-        } catch {
-            provider = new anchor.AnchorProvider(connection, wallet, {})
-            anchor.setProvider(provider)
-        }
+		let provider: anchor.Provider
+		try {
+			provider = anchor.getProvider()
+		} catch {
+			provider = new anchor.AnchorProvider(connection, wallet, {})
+			anchor.setProvider(provider)
+		}
 
-        const program = new anchor.Program(idl as anchor.Idl, PROGRAM_ID) as unknown as anchor.Program<InstantYieldLending> // Haven't found a better way to use the program types
-        setProgram(program)
+		const program = new anchor.Program(idl as anchor.Idl, PROGRAM_ID) as unknown as anchor.Program<InstantYieldLending> // Haven't found a better way to use the program types
+		setProgram(program)
 
         if (false) { // Check if user has opened a position
             setHasPosition(true);
@@ -64,41 +70,41 @@ export default function App() {
 
     }, [wallet])
 
-    async function onClickDirectDeposit() {
-        if (!wallet || !program) {
-            console.log("Program not initialised")
-            return
-        }
+	async function onClickDirectDeposit() {
+		if (!wallet || !program) {
+			console.log("Program not initialised")
+			return
+		}
 
-        const tx = await program.methods.treasuryDirectDeposit(new anchor.BN(5)) // TODO: replace '5' with input
-            .accounts({
-                treasury, payer: wallet.publicKey
-            })
-            .rpc()
+		const tx = await program.methods.treasuryDirectDeposit(new anchor.BN(5)) // TODO: replace '5' with input
+			.accounts({
+				treasury, payer: wallet.publicKey
+			})
+			.rpc()
 
-        console.log("Deposit tx hash:", tx)
+		console.log("Deposit tx hash:", tx)
 
-        let balance = await anchor.getProvider().connection.getBalance(treasury)
-        console.log("Balance: ", balance)
-    }
+		let balance = await anchor.getProvider().connection.getBalance(treasury)
+		console.log("Balance: ", balance)
+	}
 
-    async function createEscrow() {
-        if (!wallet || !program) {
-            console.log("Program not initialised")
-            return
-        }
+	async function createEscrow() {
+		if (!wallet || !program) {
+			console.log("Program not initialised")
+			return
+		}
 
-        const [escrow] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("iyl-escrow"), wallet.publicKey.toBytes()], PROGRAM_ID); // TODO: extract to stateful var
+		const [escrow] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("iyl-escrow"), wallet.publicKey.toBytes()], PROGRAM_ID); // TODO: extract to stateful var
 
-        const tx = await program.methods.initializeEscrow(new anchor.BN(1))
-            .accounts({ escrow, lender: wallet.publicKey })
-            .rpc();
+		const tx = await program.methods.initializeEscrow(new anchor.BN(1))
+			.accounts({ escrow, lender: wallet.publicKey })
+			.rpc();
 
-        console.log("Escrow init tx hash:", tx);
+		console.log("Escrow init tx hash:", tx);
 
-        let balance = await anchor.getProvider().connection.getBalance(escrow);
-        console.log("Escrow balance:", balance);
-    }
+		let balance = await anchor.getProvider().connection.getBalance(escrow);
+		console.log("Escrow balance:", balance);
+	}
 
     async function lendTokens() { // Solend integration
         console.log("Connection: ", connection) // Connection is underfined
@@ -264,9 +270,9 @@ export default function App() {
                         </Container>
                     )}
 
-                </div>
-                <Footer />
-            </div>
-        </WalletContextWrapper>
-    )
+				</div>
+				<Footer />
+			</div>
+		</WalletContextWrapper>
+	)
 }

@@ -16,12 +16,26 @@ pub mod instant_yield_lending {
 		Ok(())
 	}
 
-	pub fn treasury_direct_deposit(ctx: Context<DirectDepositTreasury>, sol: u64) -> Result<()> {
+	pub fn treasury_direct_deposit(ctx: Context<DirectTreasuryDeposit>, sol: u64) -> Result<()> {
 		let cpi_ctx = CpiContext::new(
 			ctx.accounts.system_program.to_account_info(), 
 			system_program::Transfer {
 				from: ctx.accounts.payer.to_account_info().clone(),
 				to: ctx.accounts.treasury.to_account_info().clone(),
+			}
+		);
+
+		system_program::transfer(cpi_ctx, LAMPORTS_PER_SOL * sol)?;
+
+		Ok(())
+	}
+
+	pub fn treasury_direct_withdraw(ctx: Context<DirectTreasuryWithdraw>, sol: u64) -> Result<()> {
+		let cpi_ctx = CpiContext::new(
+			ctx.accounts.system_program.to_account_info(),
+			system_program::Transfer {
+				from: ctx.accounts.treasury.to_account_info().clone(),
+				to: ctx.accounts.signer.to_account_info().clone(),
 			}
 		);
 
@@ -70,7 +84,7 @@ pub struct InitTreasury<'info> {
 }
 
 #[derive(Accounts)]
-pub struct DirectDepositTreasury<'info> {
+pub struct DirectTreasuryDeposit<'info> {
 	#[account(
 		mut,
 		seeds = [b"iyl-treasury"],
@@ -80,6 +94,20 @@ pub struct DirectDepositTreasury<'info> {
 
 	#[account(mut)]
 	payer: Signer<'info>,
+	system_program: Program<'info, System>,
+}
+
+#[derive(Accounts)]
+pub struct DirectTreasuryWithdraw<'info> {
+	#[account(
+		mut,
+		seeds = [b"iyl-treasury"],
+		bump = treasury.bump
+	)]
+	pub treasury: Account<'info, Treasury>,
+
+	#[account(mut)]
+	signer: Signer<'info>,
 	system_program: Program<'info, System>,
 }
 
