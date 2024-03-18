@@ -2,38 +2,29 @@
 
 /* ------------------------- Imports ------------------------- */
 // Frontend
-import { useEffect, useState } from "react";
+import { useEffect, useState, useReducer } from "react";
 import Container from '../components/Container'
 import Card from '../components/Card';
 // Web3
-import { useAnchorWallet, useConnection } from "@solana/wallet-adapter-react";
+import { useAnchorWallet, useConnection, useWallet } from "@solana/wallet-adapter-react";
 import * as anchor from "@coral-xyz/anchor";
 import * as web3 from "@solana/web3.js";
+// Helpers
+import { getCurrentAPR } from "../utils/SolendAPI";
+import * as constant from "../utils/constants.json"
 
 import { InstantYieldLending } from "../lib/types/instant_yield_lending";
 import idl from "../lib/idl/instant_yield_lending.json";
 
-
-/* ------------------------ Variables ------------------------ */
-const PROGRAM_ID = new web3.PublicKey("8yamCrCUweKhUfAhQSyR8pvKUgRcFc2SeuXbLECvkX7i")
-
-// Solend (devnet)
-const SOLEND_PROGRAM_ID = "ALend7Ketfx5bxh6ghsCDXAoDrhvEmsXT3cynB6aPLgx";
-const LENDING_MARKET_MAIN = "GvjoVKNjBvQcFaSKUW1gTE7DxhSpjHbE69umVR5nPuQp";
-const RESERVE_ACCOUNT_ID = "BgxfHJDzm44T7XG68MYKx7YisTjZu73tVovyZSjJMpmw"; // USDC
-const OBLIGATION_LEN = 1300;
-
 /* ------------------------ Components ----------------------- */
 export default function App() {
-    // admin
+    // web3
     const [program, setProgram] = useState<anchor.Program<InstantYieldLending>>()
-    const [treasury] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("iyl-treasury")], PROGRAM_ID)
+    const [treasury] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("iyl-treasury")], new web3.PublicKey(constant.PROGRAM_ID))
+    const [currentAPR, setCurrentAPR] = useState("Loading...")
 
     // frontend
-    const { connection } = useConnection();
-    const wallet = useAnchorWallet();
     const [hasPosition, setHasPosition] = useState(false);
-    const [currentAPR, setCurrentAPR] = useState("Loading...");
     const [showStakeAndReceive, setStakeAndReceive] = useState(false);
 
     // position
@@ -43,45 +34,71 @@ export default function App() {
     const [esimatedLockup, setEstimatedLockup] = useState("Loading...");
     const [withdrawAmount, setWithdrawAmount] = useState();
 
+    // constants
+    const { connection } = useConnection();
+    const wallet = useAnchorWallet();
 
 	// Setup provider and program
 	useEffect(() => {
-		if (!wallet) { return }
-		console.log("Wallet:", wallet.publicKey.toBase58())
-
-		let provider: anchor.Provider
-		try {
-			provider = anchor.getProvider()
-		} catch {
-			provider = new anchor.AnchorProvider(connection, wallet, {})
-			anchor.setProvider(provider)
-		}
-
-		const program = new anchor.Program(idl as anchor.Idl, PROGRAM_ID) as unknown as anchor.Program<InstantYieldLending> // Haven't found a better way to use the program types
+        if (!wallet) { return }
+        console.log("Wallet:", wallet.publicKey.toBase58())
+    
+        let provider: anchor.Provider
+        try {
+            provider = anchor.getProvider()
+        } catch {
+            provider = new anchor.AnchorProvider(connection, wallet, {})
+            anchor.setProvider(provider)
+        }
+		const program = new anchor.Program(idl as anchor.Idl, constant.PROGRAM_ID) as unknown as anchor.Program<InstantYieldLending> // Haven't found a better way to use the program types
 		setProgram(program)
-        getCurrentAPR();
 
+        const fetchAPR = async () => {
+            setCurrentAPR(await getCurrentAPR());
+        };
+        fetchAPR();
     }, [wallet, connection])
 
-    async function getCurrentAPR() {
-        const apiUrl = `https://api.solend.fi/v1/reserves/historical-interest-rates?ids=${RESERVE_ACCOUNT_ID}&span=1w`;
+
+	async function createEscrow() {
+		if (!wallet || !program) {
+			console.log("Program not initialised")
+			return
+		}
+
+		const [escrow] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("iyl-escrow"), wallet.publicKey.toBytes()], new web3.PublicKey(constant.PROGRAM_ID)); // TODO: extract to stateful var
+
+		const tx = await program.methods.initializeEscrow(new anchor.BN(1))
+			.accounts({ escrow, lender: wallet.publicKey })
+			.rpc();
+
+		console.log("Escrow init tx hash:", tx);
+
+		let balance = await anchor.getProvider().connection.getBalance(escrow);
+		console.log("Escrow balance:", balance);
+	}
+
+    async function lendTokensSolend(): Promise<void> {
         try {
-            const response = await fetch(apiUrl);
-            const data = await response.json();
-    
-            const historicalRates = data?.[RESERVE_ACCOUNT_ID];
-            const supplyAPR = historicalRates[historicalRates.length - 1].supplyAPR;
-            const supplyAPRPercentage = supplyAPR * 100;
-            setCurrentAPR(supplyAPRPercentage.toFixed(2));
+            console.log("Kamino action:");
         } catch (error) {
-            console.error('Error fetching data from Solend API:', error);
-            throw error;
+            console.error("Error lending tokens on Solend:", error);
         }
     }
-    
 
-	async function onClickDirectDeposit() {
-		if (!wallet || !program) {
+    async function withdrawTokensSolend() {
+        console.log("Withdraw");
+    }
+
+    function estimateLockup() {
+        console.log("Estimate lockup. Stake: ", stakeAmount, " Desired: ", desiredAmount)
+        setEstimatedLockup("6");
+        setStakeAndReceive(true);
+    }
+
+    async function stakeAndReceive() {
+        console.log("Stake and receive");
+        if (!wallet || !program) {
 			console.log("Program not initialised")
 			return
 		}
@@ -96,80 +113,6 @@ export default function App() {
 
 		let balance = await anchor.getProvider().connection.getBalance(treasury)
 		console.log("Balance: ", balance)
-	}
-
-	async function createEscrow() {
-		if (!wallet || !program) {
-			console.log("Program not initialised")
-			return
-		}
-
-		const [escrow] = anchor.web3.PublicKey.findProgramAddressSync([Buffer.from("iyl-escrow"), wallet.publicKey.toBytes()], PROGRAM_ID); // TODO: extract to stateful var
-
-		const tx = await program.methods.initializeEscrow(new anchor.BN(1))
-			.accounts({ escrow, lender: wallet.publicKey })
-			.rpc();
-
-		console.log("Escrow init tx hash:", tx);
-
-		let balance = await anchor.getProvider().connection.getBalance(escrow);
-		console.log("Escrow balance:", balance);
-	}
-
-    // async function lendTokensSolend() { // Solend integration      
-    //     if (!wallet) {
-    //         alert("Wallet not initialised")
-    //         return;
-    //     }
-    //     console.log("Connection: ", solanaConnection) // Connection
-    //     try {
-    //         // Create one or more (may contain setup accuont creation txns) to perform a Solend action.
-    //         const accounts = await solanaConnection.getProgramAccounts(
-    //             new PublicKey(SOLEND_PROGRAM_ID),
-    //             {
-    //                 commitment: connection.commitment,
-    //                 filters: [
-    //                     {
-    //                         memcmp: {
-    //                             offset: 10,
-    //                             bytes: LENDING_MARKET_MAIN,
-    //                         },
-    //                     },
-    //                     {
-    //                         dataSize: OBLIGATION_LEN,
-    //                     },
-    //                 ],
-    //                 encoding: "base64",
-    //             }
-    //         );
-    //         console.log("Number of users:", accounts.length);
-    //         console.log(accounts);
-    //     } catch(err) {
-    //         console.error(err);
-    //     }
-    // }
-
-    async function lendTokensSolend(): Promise<void> {
-        try {
-            console.log("Fuck this shit")
-        } catch (error) {
-          console.error('Error supplying tokens to Solend:', error);
-          throw error;
-        }
-      }
-
-    async function withdrawTokensSolend() {
-        console.log("Withdraw");
-    }
-
-    function estimateLockup() {
-        console.log("Estimate lockup. Stake: ", stakeAmount, " Desired: ", desiredAmount)
-        setEstimatedLockup("6");
-        setStakeAndReceive(true);
-    }
-
-    function stakeAndReceive() {
-        console.log("Stake and receive")
     }
 
     function unlockCapital() {
