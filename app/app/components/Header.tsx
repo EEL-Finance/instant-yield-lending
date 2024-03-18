@@ -16,7 +16,7 @@ import idl from "../lib/idl/instant_yield_lending.json";
 
 
 /* ------------------------ Variables ------------------------ */
-const PROGRAM_ID = new PublicKey("8yamCrCUweKhUfAhQSyR8pvKUgRcFc2SeuXbLECvkX7i")
+const PROGRAM_ID = new PublicKey("7kB1Hkaq6CVoB4C2pMoKws2ijMEL6Uh5HEP5aJnSUP2W")
 
 // This fixes the hydration error that is created by <WalletMultiButton />
 const WalletMultiButton = dynamic(

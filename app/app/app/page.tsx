@@ -16,6 +16,16 @@ import * as constant from "../utils/constants.json"
 import { InstantYieldLending } from "../lib/types/instant_yield_lending";
 import idl from "../lib/idl/instant_yield_lending.json";
 
+
+/* ------------------------ Variables ------------------------ */
+const PROGRAM_ID = new web3.PublicKey("7kB1Hkaq6CVoB4C2pMoKws2ijMEL6Uh5HEP5aJnSUP2W")
+
+// Solend (devnet)
+const SOLEND_PROGRAM_ID = "ALend7Ketfx5bxh6ghsCDXAoDrhvEmsXT3cynB6aPLgx";
+const LENDING_MARKET_MAIN = "GvjoVKNjBvQcFaSKUW1gTE7DxhSpjHbE69umVR5nPuQp";
+const RESERVE_ACCOUNT_ID = "BgxfHJDzm44T7XG68MYKx7YisTjZu73tVovyZSjJMpmw"; // USDC
+const OBLIGATION_LEN = 1300;
+
 /* ------------------------ Components ----------------------- */
 export default function App() {
     // web3
@@ -53,10 +63,10 @@ export default function App() {
 		const program = new anchor.Program(idl as anchor.Idl, constant.PROGRAM_ID) as unknown as anchor.Program<InstantYieldLending> // Haven't found a better way to use the program types
 		setProgram(program)
 
-        const fetchAPR = async () => {
-            setCurrentAPR(await getCurrentAPR());
-        };
-        fetchAPR();
+        // const fetchAPR = async () => {
+        //     setCurrentAPR(await getCurrentAPR());
+        // };
+        // fetchAPR();
     }, [wallet, connection])
 
 
@@ -78,13 +88,29 @@ export default function App() {
 		console.log("Escrow balance:", balance);
 	}
 
+    async function getCurrentAPR() {
+        const apiUrl = `https://api.solend.fi/v1/reserves/historical-interest-rates?ids=${RESERVE_ACCOUNT_ID}&span=1w`;
+        try {
+            const response = await fetch(apiUrl);
+            const data = await response.json();
+    
+            const historicalRates = data?.[RESERVE_ACCOUNT_ID];
+            const supplyAPR = historicalRates[historicalRates.length - 1].supplyAPR;
+            const supplyAPRPercentage = supplyAPR * 100;
+            setCurrentAPR(supplyAPRPercentage.toFixed(2));
+        } catch (error) {
+            console.error('Error fetching data from Solend API:', error);
+            throw error;
+        }
+
     async function lendTokensSolend(): Promise<void> {
         try {
-            console.log("Kamino action:");
+            console.log("Fuck this shit")
         } catch (error) {
-            console.error("Error lending tokens on Solend:", error);
+          console.error('Error supplying tokens to Solend:', error);
+          throw error;
         }
-    }
+      }
 
     async function withdrawTokensSolend() {
         console.log("Withdraw");
@@ -96,23 +122,8 @@ export default function App() {
         setStakeAndReceive(true);
     }
 
-    async function stakeAndReceive() {
-        console.log("Stake and receive");
-        if (!wallet || !program) {
-			console.log("Program not initialised")
-			return
-		}
-
-		const tx = await program.methods.treasuryDirectDeposit(new anchor.BN(5)) // TODO: replace '5' with input
-			.accounts({
-				treasury, payer: wallet.publicKey
-			})
-			.rpc()
-
-		console.log("Deposit tx hash:", tx)
-
-		let balance = await anchor.getProvider().connection.getBalance(treasury)
-		console.log("Balance: ", balance)
+    function stakeAndReceive() {
+        console.log("Stake and receive")
     }
 
     function unlockCapital() {
@@ -151,7 +162,7 @@ export default function App() {
                             <Card>
                                 <div className='flex gap-4 justify-around flex-wrap mb-4'>
                                     <div>
-                                        <p className='text-sm text-slate-400 font-medium mb-1'>Current supply APR on <a href="https://solend.fi/" className="text-blue-500 hover:underline">Solend</a>: </p>
+                                        <p className='text-sm text-slate-400 font-medium mb-1'>Current supply APR on <a href="https://solend.fi/" className="text-blue-500 hover:underline">Orca</a>: </p>
                                         <h1 className='text-2xl font-bold'> {currentAPR}% </h1>
                                     </div>
                                     <div>
@@ -161,7 +172,7 @@ export default function App() {
                                 </div>
                             </Card>
                             <Card>
-                                <h1 className='text-2xl font-bold mb-4'>Lend on Solend</h1>
+                                <h1 className='text-2xl font-bold mb-4'>Lend on Orca</h1>
                                 <div className='grid grid-cols-2 gap-3'>
                                     <div className='flex col-span-2 flex-col'>
                                         <label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Enter amount of USDC to lend</label>
@@ -242,7 +253,7 @@ export default function App() {
                                 </div>
                             </Card >
                             <Card>
-                                <h1 className='text-2xl font-bold mb-4'>Withdraw on Solend</h1>
+                                <h1 className='text-2xl font-bold mb-4'>Withdraw on Orca</h1>
                                 <div className='grid grid-cols-2 gap-3'>
                                     <div className='flex col-span-2 flex-col'>
                                         <label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Enter amount of cTokens to withdraw</label>
@@ -263,4 +274,4 @@ export default function App() {
             )}
         </div>
 	)
-}
+}}

@@ -17,8 +17,8 @@ export interface WalletContextWrapperProps {
 const wallets = [
     new PhantomWalletAdapter()
 ] 
-// const endpoint = clusterApiUrl("devnet");
-const endpoint = "http://127.0.0.1:8899";
+const endpoint = clusterApiUrl("devnet");
+// const endpoint = "http://127.0.0.1:8899";
 
 /* ------------------------ Components ----------------------- */
 export default function WalletContextWrapper({ children }: WalletContextWrapperProps) {
