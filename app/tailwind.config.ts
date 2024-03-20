@@ -8,11 +8,11 @@ const config: Config = {
   ],
   theme: {
     colors: {
-      "bg-l": "#F1FFFA",
-      "bg-d": "#464E47",
-      "ac-1": "#CCFCCB",
-      "ac-2": "#96E6B3",
-      "ac-3": "#568259"
+      "bg-l": "#222831",
+      "bg-d": "#31363F",
+      "ac-1": "#76ABAE",
+      "ac-2": "#EEEEEE",
+      "ac-3": "#76ABAE"
     }
   },
   plugins: [],

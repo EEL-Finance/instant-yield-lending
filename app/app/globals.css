@@ -8,7 +8,7 @@
 @layer base {
   body {
     @apply: text-black font-body min-h-screen;
-    background-color: #F1FFFA;
+    background-color: #222831;
     background-position: top;
     background-repeat: no-repeat;
     background-size: cover;
