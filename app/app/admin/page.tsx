@@ -115,7 +115,8 @@ export default function Main() {
 						<button onClick={initializeTreasury} type="submit" className="whitespace-nowrap col-span-2 text-center font-semibold rounded-md border-1 border-bg-d bg-ac-1 h-9 px-3 text-bg-d">Initialize Treasury</button>
 						<h1>Treasury Balance: { balance } lamports</h1>
 						<h1>Treasury Balance: { balance / anchor.web3.LAMPORTS_PER_SOL } SOL</h1>
-						<label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Deposit to treasury: </label>
+						<h1>Lamports per Sol: { anchor.web3.LAMPORTS_PER_SOL }</h1>
+						<label htmlFor="endTime" className='block mb-1 text-sm font-medium text-gray-900 dark:text-white'>Deposit to treasury (lamports): </label>
 						<input
 							name='desired_amount' placeholder="Desired amount" type="text" className="bg-gray-50 border border-bg-d text-gray-900 text-sm rounded-lg focus:ring-ac-2 focus:border-ac-2 block w-full p-2.5 dark:bg-gray-700 dark:border-ac-3 dark:placeholder-gray-400 dark:text-white dark:focus:ring-ac-2 dark:focus:border-ac-2"
 							value={depositTreasury}

@@ -1,4 +1,3 @@
-use anchor_lang::solana_program::native_token::LAMPORTS_PER_SOL;
 use anchor_lang::system_program::*;
 use anchor_lang::prelude::*;
 
@@ -16,7 +15,7 @@ pub mod instant_yield_lending {
 		Ok(())
 	}
 
-	pub fn treasury_direct_deposit(ctx: Context<DirectTreasuryDeposit>, sol: u64) -> Result<()> {
+	pub fn treasury_direct_deposit(ctx: Context<DirectTreasuryDeposit>, lamports: u64) -> Result<()> {
 		let cpi_ctx = CpiContext::new(
 			ctx.accounts.system_program.to_account_info(), 
 			system_program::Transfer {
@@ -25,12 +24,12 @@ pub mod instant_yield_lending {
 			}
 		);
 
-		system_program::transfer(cpi_ctx, LAMPORTS_PER_SOL * sol)?;
+		system_program::transfer(cpi_ctx, lamports)?;
 
 		Ok(())
 	}
 
-	pub fn treasury_direct_withdraw(ctx: Context<DirectTreasuryWithdraw>, sol: u64) -> Result<()> {
+	pub fn treasury_direct_withdraw(ctx: Context<DirectTreasuryWithdraw>, lamports: u64) -> Result<()> {
 		let cpi_ctx = CpiContext::new(
 			ctx.accounts.system_program.to_account_info(),
 			system_program::Transfer {
@@ -39,12 +38,12 @@ pub mod instant_yield_lending {
 			}
 		);
 
-		system_program::transfer(cpi_ctx, LAMPORTS_PER_SOL * sol)?;
+		system_program::transfer(cpi_ctx, lamports)?;
 
 		Ok(())
 	}
 
-	pub fn initialize_escrow(ctx: Context<InitEscrow>, sol: u64) -> Result<()> {
+	pub fn initialize_escrow(ctx: Context<InitEscrow>, lamports: u64) -> Result<()> {
 		ctx.accounts.escrow.bump = ctx.bumps.escrow;
 
 		// Send lamports lender -> escrow
@@ -56,7 +55,7 @@ pub mod instant_yield_lending {
 			}
 		);
 
-		system_program::transfer(cpi_ctx, LAMPORTS_PER_SOL * sol)?;
+		system_program::transfer(cpi_ctx, lamports)?;
 
 		Ok(())
 	}
